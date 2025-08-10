@@ -1,0 +1,220 @@
+basePath: /
+definitions:
+  api.ApiResponse:
+    properties:
+      data: {}
+      error:
+        $ref: '#/definitions/api.ApiResponseError'
+      success:
+        type: boolean
+    type: object
+  api.ApiResponseError:
+    properties:
+      code:
+        type: integer
+      exception:
+        type: string
+      message:
+        type: string
+    type: object
+  controller.CreateMessageRequest:
+    properties:
+      content:
+        type: string
+      recipient_number:
+        type: string
+    required:
+    - content
+    - recipient_number
+    type: object
+  domain.Message:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      error_count:
+        type: integer
+      error_message:
+        type: string
+      id:
+        type: integer
+      message_id:
+        type: string
+      recipient_number:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is the Insider messaging API server.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Insider API
+  version: "1.0"
+paths:
+  /healthcheck:
+    get:
+      description: Check if the server is running
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Server is running
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.ApiResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Health check endpoint
+      tags:
+      - health
+  /messages:
+    post:
+      consumes:
+      - application/json
+      description: Create a new message with content and recipient number
+      parameters:
+      - description: Message data
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/controller.CreateMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Message created successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.ApiResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.ApiResponse'
+            - properties:
+                error:
+                  $ref: '#/definitions/api.ApiResponseError'
+              type: object
+        "500":
+          description: Internal server error
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.ApiResponse'
+            - properties:
+                error:
+                  $ref: '#/definitions/api.ApiResponseError'
+              type: object
+      summary: Create a new message
+      tags:
+      - messages
+  /messages/toggle:
+    post:
+      consumes:
+      - application/json
+      description: Toggles the message service between running and stopped states
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Service state toggled successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.ApiResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Internal server error
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.ApiResponse'
+            - properties:
+                error:
+                  $ref: '#/definitions/api.ApiResponseError'
+              type: object
+      summary: Start or stop message service
+      tags:
+      - messages
+  /ping:
+    get:
+      description: Simple ping endpoint that responds with pong
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: pong
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.ApiResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Ping endpoint
+      tags:
+      - health
+  /sentmessages:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve sent messages with optional pagination
+      parameters:
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Limit for pagination
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of sent messages
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.ApiResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/domain.Message'
+                  type: array
+              type: object
+        "500":
+          description: Internal server error
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.ApiResponse'
+            - properties:
+                error:
+                  $ref: '#/definitions/api.ApiResponseError'
+              type: object
+      summary: Get sent messages
+      tags:
+      - messages
+schemes:
+- http
+- https
+swagger: "2.0"

@@ -1,0 +1,28 @@
+# Version control
+.git
+.gitignore
+
+# IDE specific files
+.vscode
+.idea
+
+# Build files
+bin/
+tmp/
+
+# Local development
+.env
+*.env
+.env.*
+
+# Documentation
+README.md
+LICENSE
+
+# Docker files
+Dockerfile
+.dockerignore
+.docker
+
+# CI/CD
+.github/
